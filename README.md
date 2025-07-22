@@ -57,11 +57,11 @@ $$
 
 **Where:**
 
-- \( x_t \) is the noisy image at time \( t \)  
-- \( \Delta t \) is the timestep size  
-- \( g(t) \) is the diffusion coefficient (noise scale)  
-- \( s_\theta(x_t, t, y) \) is the score function (model output)  
-- \( z \sim \mathcal{N}(0, I) \) is Gaussian noise  
+- $x_t$ is the noisy image at time $t$  
+- $\Delta t$ is the timestep size  
+- $g(t)$ is the diffusion coefficient (noise scale)  
+- $s_\theta(x_t, t, y)$ is the score function (model output)  
+- $z \sim \mathcal{N}(0, I)$ is Gaussian noise  
 
 **Code**:
 
@@ -82,7 +82,7 @@ $$
 
 **Where:**
 
-- \( t \in (0, 1] \) is the normalized diffusion time  
+- $t \in (0, 1]$ is the normalized diffusion time  
 - Constants `0.008` and `1.008` ensure numerical stability  
 - This schedule smoothly increases noise over time  
 
@@ -101,17 +101,17 @@ def marginal_std(t, beta_min=0.1, beta_max=20.0):
 The model is trained to predict the added noise using **denoising score matching**:
 
 $$
-\mathcal{L}_{DSM} = \mathbb{E}_{x_0, \epsilon, t} \left[ \left\| \epsilon + \sigma(t) \cdot s_\theta(x_t, t, y) \right\|^2 \right]
+\mathcal{L}_{DSM} = \mathbb{E}_{x_0, \epsilon, t} \left[ \left| \epsilon + \sigma(t) \cdot s_\theta(x_t, t, y) \right|^2 \right]
 $$
 
 **Where:**
 
-- \( x_0 \) is the clean image  
-- \( x_t = x_0 + \sigma(t) \cdot \epsilon \) is the noisy image  
-- \( \epsilon \sim \mathcal{N}(0, I) \) is the noise  
-- \( s_\theta(x_t, t, y) \) is the model’s predicted score  
-- \( \sigma(t) \) is the time-dependent standard deviation  
-- The loss encourages the model to denoise \( x_t \) by predicting \( -\epsilon / \sigma(t) \)
+- $x_0$ is the clean image  
+- $x_t = x_0 + \sigma(t) \cdot \epsilon$ is the noisy image  
+- $\epsilon \sim \mathcal{N}(0, I)$ is the noise  
+- $s_\theta(x_t, t, y)$ is the model’s predicted score  
+- $\sigma(t)$ is the time-dependent standard deviation  
+- The loss encourages the model to denoise $x_t$ by predicting $-\epsilon / \sigma(t)$
 
 **Code**:
 
@@ -131,9 +131,9 @@ $$
 
 **Where:**
 
-- \( \gamma(t) \) is the time embedding vector  
-- \( w_i \) are fixed or learnable frequencies sampled from a Gaussian  
-- \( d \) is the embedding dimension (even number)  
+- $\gamma(t)$ is the time embedding vector  
+- $w_i$ are fixed or learnable frequencies sampled from a Gaussian  
+- $d$ is the embedding dimension (even number)  
 - This is inspired by **positional encodings** in Transformers
 
 **Code**:
@@ -154,14 +154,12 @@ $$
 
 **Where:**
 
-- \( Q = X W^Q \): Query matrix  
-- \( K = X W^K \): Key matrix  
-- \( V = X W^V \): Value matrix  
-- \( d_k \): Dimensionality of the key vectors  
+- $Q = X W^Q$: Query matrix  
+- $K = X W^K$: Key matrix  
+- $V = X W^V$: Value matrix  
+- $d_k$: Dimensionality of the key vectors  
 - Each token attends to every other token in the sequence  
 - Used in both encoder and decoder layers of Transformer blocks
-
----
 
 **Code**:
 
@@ -189,11 +187,9 @@ $$
 
 **Where:**
 
-- \( Q = X_q W^Q \): queries from main input (e.g. image or latent tokens)  
-- \( K = X_c W^K \), \( V = X_c W^V \): keys and values from **context input** (e.g. text or class labels)  
+- $Q = X_q W^Q$: queries from main input (e.g. image or latent tokens)  
+- $K = X_c W^K$, $V = X_c W^V$: keys and values from **context input** (e.g. text or class labels)  
 - This allows the model to **attend to external information** like class, caption, or segmentation mask
-
----
 
 **Code**:
 
@@ -219,19 +215,15 @@ $$
 
 **Where:**
 
-- \( \hat{s}_\theta \): normalized score function used in reverse sampling  
-- \( \text{UNet}(x_t, t, y) \): raw output from the neural network  
-- \( \sigma(t) \): marginal standard deviation at time \( t \)
-
----
+- $\hat{s}_\theta$: normalized score function used in reverse sampling  
+- $\text{UNet}(x_t, t, y)$: raw output from the neural network  
+- $\sigma(t)$: marginal standard deviation at time $t$
 
 **Why Normalize?**
 
 - Ensures that the output has the same **scale** as the noise that was added
 - Makes training **numerically stable** and ensures **correct gradient scaling**
 - Often used before applying the score to reverse sampling (Euler-Maruyama or DDIM)
-
----
 
 **Code**:
 
@@ -250,18 +242,14 @@ $$
 
 **Where:**
 
-- \( e \) is the current epoch  
-- \( \text{lr}(e) \): learning rate at epoch \( e \)  
+- $e$ is the current epoch  
+- $\text{lr}(e)$: learning rate at epoch $e$  
 - The learning rate decays by a factor of **0.98 per epoch**, but never goes below **0.2**
-
----
 
 **Why Use This?**
 
 - Slows down learning over time to help the model **converge smoothly**
 - The `max()` ensures the learning rate doesn’t vanish completely
-
----
 
 **Code**:
 
