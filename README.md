@@ -100,9 +100,9 @@ def marginal_std(t, beta_min=0.1, beta_max=20.0):
 **Formula**  
 The model is trained to predict the added noise using **denoising score matching**:
 
-$$
+```math
 \mathcal{L}_{DSM} = \mathbb{E}_{x_0, \epsilon, t} \left[ \left| \epsilon + \sigma(t) \cdot s_\theta(x_t, t, y) \right|^2 \right]
-$$
+```
 
 **Where:**
 
